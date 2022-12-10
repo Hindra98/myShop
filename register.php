@@ -1,13 +1,27 @@
-
 <?php
 session_start();
 if (isset($_SESSION['id'])) {
-  # code...
   header("Location: index.php");
   exit();
 }
+$message = "";
+$err = 0;
+if (isset($_GET['err'])) {
+  $err = (int) $_GET['err'];
+  if ($err == 1) { // Des champs sont vides
+    $message = "Vous devez remplir tous les champs!";
+  }
+  if ($err == 2) { // Mauvaise longueur du mot de passe
+    $message = "Le mot de passe doit contenir au moins cinq caractères";
+  }
+  if ($err == 3) { // Mots de passe differents
+    $message = "Les mots de passe ne sont pas identiques";
+  }
+  if ($err == 4) { // Email existant dans la base de donnée
+    $message = "Cette adresse mail existe dans notre base de donnée<br/>Connectez vous avec cette adresse email";
+  }
+}
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -15,54 +29,87 @@ if (isset($_SESSION['id'])) {
 <head>
   <meta charset="UTF-8" />
   <title>Inscription - MyShop</title>
-  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
   <link rel="icon" href="img/kaneki.jpeg" type="image/jpeg" />
+  <style>
+    body {
+      color: #6a6f8c;
+      font: 600 16px/18px "Open Sans", sans-serif;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="form">
-    <h1>Inscription - MyShop</h1>
-    <form method="post" action="function.php">
-      <label class="lab" for="nom">Nom</label>
-      <input type="text" id="nom" name="nom" class="inp" placeholder="Votre nom" />
-      <br />
-      <label class="lab" for="prenom">Prénom</label>
-      <input type="text" id="prenom" name="prenom" class="inp" placeholder="Votre prénom" />
-      <br />
-      <label class="lab" for="telephone">Téléphone</label>
-      <input type="tel" id="telephone" name="telephone" class="inp" placeholder="Votre téléphone" />
-      <br />
-      <label class="lab" for="email">Email</label>
-      <input type="email" id="email" name="email" class="inp" placeholder="Votre email" />
-      <br />
-      <label class="lab" for="adresse">Adresse</label>
-      <input type="text" id="adresse" name="adresse" class="inp" placeholder="Votre adresse" />
-      <br />
-      <label class="lab" for="genre">Genre</label>
-      <label for="homme">Homme</label> <input type="radio" id="homme" name="genre" class="genre" value="H" />
-      <label for="femme">Femme</label> <input type="radio" id="femme" name="genre" class="genre" value="F" />
-      <br />
-      <label class="lab">Situation matrimoniale</label>
-      <select name="sm">
-        <option value="1">Celibataire</option>
-        <option value="2">Marie(e)</option>
-        <option value="0">Divorce(e)</option>
-      </select>
-      <br />
-      <button type="submit">Enregistrer</button>
-      <button type="reset">Annuler</button>
-      <p>Vous avez déjà un compte? <a href="login.php">connectez-vous</a></p>
-      <?php
-        if (isset($_GET['err'])) {
-        ?>
-        <p class="error"><?= $_GET['err']; ?></p>
+  <div class="login-wrap">
+    <div class="login-html">
+      <h1>Inscription - MyShop</h1>
+      <form class="login-form" method="POST" action="function.php">
+        <div class="groupe">
+          <div class="group">
+            <label for="email" class="label">Email</label>
+            <input id="email" name="email" type="email" class="input" placeholder="Votre adresse" required />
+          </div>
+          <div class="group">
+            <label for="nom" class="label">Nom</label>
+            <input id="nom" name="nom" type="text" class="input" placeholder="Votre nom" required />
+          </div>
+        </div>
+        <div class="groupe">
+          <div class="group">
+            <label for="pass" class="label">Mot de passe</label>
+            <input id="pass" name="pass" type="password" class="input" placeholder="Votre mot de passe" required />
+          </div>
+          <div class="group">
+            <label for="passr" class="label">Repéter mot de passe</label>
+            <input id="passr" name="passr" type="password" class="input" placeholder="Répéter mot de passe" required />
+          </div>
+        </div>
+        <div class="groupe">
+          <div class="group">
+            <label for="tel" class="label">Téléphone</label>
+            <input id="tel" name="tel" type="tel" class="input" placeholder="Votre téléphone" required />
+          </div>
+          <div class="group">
+            <label for="adresse" class="label">Adresse</label>
+            <input id="adresse" name="adresse" type="adresse" class="input" placeholder="Votre adresse" required />
+          </div>
+        </div>
+        <div class="groupe">
+          <div class="group">
+            <label class="label">Genre</label>
+            <div class="genre lab">
+              <label for="homme">Homme <input type="radio" id="homme" name="genre" value="Homme" /></label>
+              <label for="femme">Femme <input type="radio" id="femme" name="genre" value="Femme" /></label>
+            </div>
+          </div>
+          <div class="group">
+            <label class="label" for="sm">Situation matrimoniale</label>
+            <select name="sm" id="sm" required>
+              <option value="Célibataire">Célibataire</option>
+              <option value="Marié(e)">Marié(e)</option>
+              <option value="Divorcé(e)">Divorcé(e)</option>
+            </select>
+          </div>
+        </div>
+        <div class="group">
+          <input type="submit" class="button" value="S'inscrire" />
+        </div>
+        <div class="hr"></div>
+        <div class="foot-lnk">
+          <p>Vous avez déjà un compte? <a href="login.php">Connectez-vous</a></p>
+        </div>
         <?php
-        }
-      ?>
-      <input type="hidden" name="form" value="inscription" />
-    </form>
-
+        if ($err != 0) {
+        ?>
+          <p class="error"><?= $message ?></p>
+        <?php } ?>
+        <input type="hidden" name="form" value="inscription" />
+      </form>
+    </div>
   </div>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

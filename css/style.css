@@ -1,39 +1,247 @@
-div.container {
-  background-color: gray;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  margin-top: 30px;
+
+body {
+  margin: 0;
+  background: #c8c8c8;
+}
+*,
+:after,
+:before {
+  box-sizing: border-box;
+}
+.clearfix:after,
+.clearfix:before {
+  content: "";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+  display: block;
 }
 
-div h1,
-form {
-  margin: auto;
+/* Connexion-Inscription */
+
+.login-form a {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 1.1em;
+  transition: all 0.6s ease;
 }
-div {
-  width: 70%;
-  margin: auto;
+.login-form a:hover {
+  color: #1161ee;
+  font-weight: bold;
+  font-style: oblique;
 }
-div h1 {
+.login-wrap {
+  margin-top: 25px;
+  width: 100%;
+  margin-left: auto;
+  margin-bottom: auto;
+  margin-right: auto;
+  max-width: 525px;
+  min-height: 670px;
+  max-height: 1100px;
+  position: relative;
+  background: url("../img/kaneki.jpeg") no-repeat center;
+  box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24),
+    0 17px 50px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 20px;
+}
+.login-html {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  padding: 40px 20px 20px 20px;
+  background: rgba(40, 57, 101, 0.7);
+  border-radius: 20px;
+}
+.login-form .group .check {
+  display: none;
+}
+.login-form {
+  min-height: 345px;
+  position: relative;
+  perspective: 1000px;
+}
+.login-form .groupe {
+	margin-top: 10px;
+  margin-bottom: 25px;
+	width: 100%;
+}
+.login-form .groupe .group {
+	display: inline-block;
+	width: 49%;
+}
+.login-form .groupe .group:first-child {
+	margin-right: 1%;
+}
+.login-form .lab,
+.login-html h1 {
   text-align: center;
 }
-form {
-  padding: 10%;
-  padding-left: 20%;
-  background: #74b9ff;
-  border-radius: 20px 20px;
+.login-form .group .label,
+.login-form .group .input,
+.login-form .group .button {
+  width: 100%;
+  color: #fff;
+  display: block;
+  font-size: 16px;
 }
-.lab {
-  display: inline-block;
-  width: 30%;
-  font-size: 130%;
+.login-form .group .label,
+.login-form .group .button,
+.login-form .lab * {
+  cursor: pointer;
+}
+.login-form .group .input,
+.login-form .group .button {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.login-form .group .label {
+  color: #aaa;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.login-form .group .button {
+  background: #1161ee;
+  border: 2px #1161ee solid;
+  transition: all 0.8s ease;
+}
+.login-form .group .button:hover {
+  background: #fff;
   font-weight: bold;
+  border: 2px #1161ee solid;
+  color: #1161ee;
 }
-.genre {
-  font-size: 130px;
-}
-.inp,
-select {
+.login-form .group label .icon {
+  width: 15px;
+  height: 15px;
+  border-radius: 2px;
+  position: relative;
   display: inline-block;
-  width: 50%;
-  font-size: 130%;
+  background: rgba(255, 255, 255, 0.1);
 }
+.login-form .group label .icon:before,
+.login-form .group label .icon:after {
+  content: "";
+  width: 10px;
+  height: 2px;
+  background: #fff;
+  position: absolute;
+  transition: all 0.2s ease-in-out 0s;
+}
+.login-form .group label .icon:before {
+  left: 3px;
+  width: 5px;
+  bottom: 6px;
+  transform: scale(0) rotate(0);
+}
+.login-form .group label .icon:after {
+  top: 6px;
+  right: 0;
+  transform: scale(0) rotate(0);
+}
+.login-form .group .check:checked + label {
+  color: #fff;
+}
+.login-form .group .check:checked + label .icon {
+  background: #1161ee;
+}
+.login-form .group .check:checked + label .icon:before {
+  transform: scale(1) rotate(45deg);
+}
+.login-form .group .check:checked + label .icon:after {
+  transform: scale(1) rotate(-45deg);
+}
+.hr {
+  height: 2px;
+  margin: 40px 0 20px 0;
+  background: rgba(255, 255, 255, 0.2);
+}
+.foot-lnk {
+  text-align: center;
+}
+
+#sm {
+	width: 80%;
+	height: 35px;
+	text-align: center;
+	margin-left: 11%;
+  font-size: 1.1em;
+  border-radius: 5px;
+	cursor: pointer;
+}
+.login-form p.error {
+	color: red;
+  font-weight: bolder;
+  font-size: 1.2em;
+	text-decoration: underline;
+	text-align: center;
+}
+.login-form p.ok {
+	color: greenyellow;
+  font-weight: bolder;
+  font-size: 1.2em;
+	text-decoration: underline;
+	text-align: center;
+}
+/* Connexion-Inscription fin */
+
+/* La page d'index */
+nav.navbar {
+  background-color: rgb(40, 57, 101);
+}
+nav form .param {
+  color: #1161ee;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.contain .amis, .contain .messages {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.contain .amis {
+  width: 19%;
+}
+.contain .amis .ami {
+  cursor: pointer;
+}
+.contain .messages {
+  width: 78%;
+  background-color: #fff;
+}
+
+.contain .messages .mess {
+  position: relative;
+  width: max-content;
+  max-width: 60%;
+  height: max-content;
+  border-radius: 4px;
+}
+.contain .messages .messenvoi {
+  background-color: #283965;
+  color: #ccc;
+}
+.contain .messages .messrecu {
+  background-color: #ccc;
+  color: #283965;
+  left: 0;
+}
+.contain .messages .mess .fleche {
+  position: absolute;
+  border: 10px solid;
+}
+.contain .messages .messrecu .fleche {
+  bottom: -16px;
+  right: 10px;
+  border-color: #ccc transparent transparent transparent;
+}
+.contain .messages .messenvoi .fleche {
+  bottom: -16px;
+  left: 10px;
+  border-color: #283965 transparent transparent transparent;
+}
+

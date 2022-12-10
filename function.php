@@ -6,63 +6,95 @@ include("config.php");
 
 // Connexion
 if (isset($_POST['form']) && ($_POST['form'] == "connexion")) {
-  if ( isset($_POST['email']) && !empty($_POST['email']) && !empty($_POST['pass']) ) {
-    $mail = htmlentities($_POST['email']);
+
+  if (isset($_POST['email']) && !empty($_POST['email']) && !empty($_POST['pass'])) {
+    $mail = $_POST['email'];
     $hash_pass = sha1($_POST['pass']);
-    $req = $db->prepare("SELECT * FROM profil WHERE email=:email and pass=:pass");
+    $req = $db->prepare('SELECT id FROM profil WHERE email = :email and pass  = :pass');
     $req->execute(array('email' => $mail, 'pass' => $hash_pass));
     $donnees = $req->fetch();
     if ($donnees) {
       $_SESSION['id'] = $donnees['id'];
+      if (isset($_POST['souvenir'])) {
+        setcookie('id', $donnees['id'], time() + 365 * 24 * 3600, null, null, false, true);
+      }
       header('Location: index.php');
     } else {
-      header("Location: login.php?err=Email ou pass erroné $mail!");
+      header("Location: login.php?err=2");
     }
   } else {
-    header("Location: login.php?err=Email ou pass vide!");
+    header("Location: login.php?err=1");
   }
 }
 
 // Insertion
 if (isset($_POST['form']) && ($_POST['form'] == "inscription")) {
-  if ((isset($_POST['inscription']) && isset($_POST['email']))) {
-    $insertion = $connexion->prepare('INSERT INTO profil VALUES(NULL,:nom,:prenom,:telephone,:mail,:adresse,:genre,:sm)');
-    $insertion->bindParam(':nom', $_POST['nom']);
-    $insertion->bindParam(':prenom', $_POST['prenom']);
-    $insertion->bindParam(':telephone', $_POST['telephone']);
-    $insertion->bindParam(':mail', $_POST['mail']);
-    $insertion->bindParam(':adresse', $_POST['adresse']);
-    $insertion->bindParam(':genre', $_POST['genre']);
-    $insertion->bindParam(':sm', $_POST['sm']);
-    $verification = $insertion->execute();
 
-    if ($verification) {
-      echo "insertion reussie";
-    } else {
-      echo "echec de l'insertion";
-    }
-  } else {
-    echo "une variable n'est pas declaree et / ou est null";
+  if (
+    empty($_POST['email']) || empty($_POST['pass']) || empty($_POST['passr']) || empty($_POST['nom']) ||
+    empty($_POST['tel']) || empty($_POST['adresse']) || empty($_POST['genre']) || empty($_POST['sm'])
+  ) {
+    header("Location: register.php?err=1");
+    exit();
   }
+  if (strlen($_POST['pass']) < 5) {
+    header("Location: register.php?err=2");
+    exit();
+  }
+  if ($_POST['pass'] != $_POST['passr']) {
+    header("Location: register.php?err=3");
+    exit();
+  }
+
+  $mail = $_POST['email'];
+  $req = $db->prepare('SELECT * FROM profil WHERE email = :email');
+  $req->execute(array('email' => $mail));
+  $donnees = $req->fetch();
+  if ($donnees) {
+    header("Location: register.php?err=4");
+    exit();
+  }
+  $hash_pass = sha1($_POST['pass']);
+  $req = $db->prepare('INSERT INTO profil VALUES(NULL,:nom,:tel,:email,:pass,:adresse,:genre,:sm, NOW(), 0)');
+  $req->execute(array(
+    'nom' => $_POST['nom'],
+    'tel' => $_POST['tel'],
+    'email' => $_POST['email'],
+    'pass' => $hash_pass,
+    'adresse' => $_POST['adresse'],
+    'genre' => $_POST['genre'],
+    'sm' => $_POST['sm']
+  ));
+  header('Location: login.php?ok=1');
 }
 
-function ajouter($db, $image, $nom, $prix, $description)
-{
-  $req = $db->prepare("INSERT INTO produits(image,nom,prix,description) VALUES ($image,$nom,$prix,$description)");
-  $req->execute(array($image, $nom, $prix, $description));
-  $req->closeCursor();
-}
-function afficher($db)
-{
-  $req = $db->prepare("SELECT * FROM produits ORDER BY id DESC");
-  $req->execute();
-  $data = $req->fetchAll(PDO::FETCH_OBJ);
-  $req->closeCursor();
-  return $data;
-}
 
-function supprimer($db, $id)
-{
-  $req = $db->prepare("DELETE * FROM produits WHERE id=? ");
-  $req->execute(array($id));
+// Envoi de message
+if (isset($_POST['form']) && ($_POST['form'] == "message")) {
+  $uid = $_POST['uid'];
+  $id = $_SESSION['id'];
+
+  if ( empty($_POST['textMessage']) && $_FILES['sendFic']['error'] != 0 ) {
+    header("Location: index.php?err=1&uid=$uid");
+    exit();
+  }
+
+  $message = htmlentities($_POST['textMessage']);
+  $fichier = basename($_FILES['sendFic']['name']);
+
+  if (move_uploaded_file($_FILES['sendFic']['tmp_name'], './uploads/'.$fichier)) {
+    echo "envoyeee";
+  } else {
+    echo "non envoyee";
+  }
+/*
+  $req = $db->prepare('INSERT INTO messages VALUES(NULL,:id,:userid,:contenu,NOW(),:fichier, 0)');
+  $req->execute(array(
+    'id' => $id,
+    'userid' => $uid,
+    'contenu' => $message,
+    'fichier' => $fichier
+  ));
+  header("Location: index.php?uid=$uid");
+  */
 }
