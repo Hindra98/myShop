@@ -11,12 +11,12 @@ if (!isset($_SESSION['id'])) {
 
 include_once('config.php');
 $id = (int) $_SESSION['id'];
-$req = $db->prepare("SELECT * FROM profil WHERE id=?");
-$req->execute(array($id));
+$req = data_user($id, $db);
 while ($donnees = $req->fetch()) {
   $nom = $donnees['nom'];
   $telephone = $donnees['telephone'];
   $email = $donnees['email'];
+  $profil = ($donnees['photo']) ? $donnees['photo'] : 'profil/defaut.jpeg';
 }
 $req->closeCursor();
 
@@ -47,12 +47,13 @@ if (isset($_GET['err'])) {
   <meta charset="UTF-8" />
   <title>Accueil - MyShop</title>
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
   <link rel="icon" href="img/kaneki.jpeg" type="image/jpeg" />
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark" aria-label="Fourth navbar example">
+  <nav class="navbar navbar-expand-lg fixed-top navbar-dark mb-5" aria-label="Fourth navbar example">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
         <img src="img/kaneki.jpeg" width="40" height="40" alt="" class="rounded-circle" />
@@ -74,8 +75,8 @@ if (isset($_GET['err'])) {
               <li><a class="dropdown-item" href="#">Something else here</a></li>
             </ul>
           </li>
-        </ul><span class="navbar-text me-2 mt-xs-3"> <?= $nom; ?> </span>
-        <form role="search" class="ms-2 mt-xs-3">
+        </ul>
+        <form role="search" class="ms-2 mt-xs-3 pull-right">
           <input class="form-control" type="search" placeholder="Search" aria-label="Search">
         </form>
         <a class="btn btn-outline-danger my-2 mt-xs-3 ms-4" href="deconnexion.php">Déconnexion</a>
@@ -83,60 +84,108 @@ if (isset($_GET['err'])) {
     </div>
   </nav><br />
 
-  <div class="contain">
-    <aside class="amis me-1">
-      <?php include_once('inc/amis.php') ?>
-    </aside>
-    <div class="messages">
+
+  <div class="containr mt-5">
+    <div class="tile tile-alt" id="messages-main">
+      <div class="ms-menu">
+        <div class="ms-user clearfix">
+          <img src="<?= $profil; ?>" alt="" class="img-avatar pull-left">
+          <div>Connecté en tant que <br> <?= $email; ?></div>
+        </div>
+
+        <?php include_once('inc/amis.php') ?>
+
+      </div>
+
+      <div class="ms-body">
+        <div class="action-header clearfix">
+          <div class="visible-xs" id="ms-menu-trigger">
+            <i class="fa fa-bars"></i>
+          </div>
+
+          <?php
+          if ($uid == 0) {
+          ?>
+            <p class="lead h2 display-6 text-black-50 text-center my-5 mx-5">
+              Choisissez un ami sur le menu gauche pour commencer à tchatter.
+            </p>
+        </div>
       <?php
-      if ($uid == 0) {
+          } else {
+            $req = data_user($uid, $db);
+            while ($datafriend = $req->fetch()) {
+              $nom_friend = $datafriend['nom'];
+              $tel_friend = $datafriend['telephone'];
+              $email_friend = $datafriend['email'];
+              $profil_friend = ($datafriend['photo']) ? $datafriend['photo'] : 'profil/defaut.jpeg';
+            }
+      ?>
+
+        <div class="pull-left hidden-xs">
+          <img src="<?= $profil_friend; ?>" alt="" class="img-avatar m-r-10">
+          <div class="lv-avatar pull-left">
+
+          </div>
+          <span><?= $nom_friend; ?></span>
+        </div>
+      </div>
+      <?php
+
+            if ($request->rowCount() == 0) {
       ?>
         <p class="lead h2 display-6 text-black-50 text-center my-5 mx-5">
-          Choisissez un ami sur le menu gauche pour commencer à tchatter.
+          Aucun message pour le moment...
         </p>
-        <?php
-      } else {
-        $cpt = 0;
-        while ($message = $request->fetch()) {
-          $contenu = $message['contenu'];
-          $date_envoi = $message['date_envoi'];
-          $fichier = $message['fichier'];
-          if ($message['id_exp'] == $id) {
-            echo messEnvoi($contenu, $date_envoi); 
-          }
-          if ($message['id_exp'] == $uid) {
-            echo messRecu($contenu, $date_envoi);
-          }
-          $cpt += 1;
-        }
-        if ($cpt == 0) {
-        ?>
-          <p class="lead h2 display-6 text-black-50 text-center my-5 mx-5">
-            Aucun message pour le moment..
-          </p>
-        <?php
-        }
-        ?>
-        <form class="input-group mt-4 mb-2 w-75 mx-auto" method="POST" action="function.php" enctype="multipart/form-data">
-          <input type="file" class="input-group-append form-control" name="sendFic" />
-          <textarea class="form-control" aria-label="With textarea" name="textMessage"></textarea>
-          <button class="input-group-append btn btn-info" type="submit"> Send </button>
+      <?php
+            } else {
+              while ($message = $request->fetch(PDO::FETCH_ASSOC)) {
+                $contenu = $message['contenu'];
+                $date_envoi = $message['date_envoi'];
+                $fichier = $message['fichier'];
+                $label_fichier = $message['label_fichier'];
+                if ($message['id_exp'] == $id) {
+                  echo messEnvoi($contenu, $date_envoi, $profil, $label_fichier, $fichier);
+                }
+                if ($message['id_exp'] == $uid) {
+                  echo messRecu($contenu, $date_envoi, $profil, $label_fichier, $fichier);
+                }
+              }
+            }
+      ?>
+      <div class="msb-reply">
+        <form method="POST" action="function.php" enctype="multipart/form-data">
+          
+          <button type="button" class="btn"><i class="fa fa-upload"></i>
+          <input type="file" name="sendFic" class="form-control" /></button>
+          <textarea class="form-control" placeholder="Envoyer votre message" name="textMessage"></textarea>
+          <button type="submit" class="btn"><i class="fa fa-paper-plane-o"></i></button>
+
           <input type="hidden" name="form" value="message" />
           <input type="hidden" name="uid" value=<?= $uid; ?> />
+          <?php
+            if ($err != 0) {
+          ?>
+            <p class="error mb-1"><?= $messageError ?></p>
+          <?php } ?>
         </form>
-
-        <?php
-        if ($err != 0) {
-        ?>
-          <p class="error"><?= $messageError ?></p>
-        <?php } ?>
-      <?php
-      }
-      ?>
+      </div>
+    <?php }
+    ?>
     </div>
   </div>
+  </div>
+
   <script src="js/jquery.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(function() {
+      if ($('#ms-menu-trigger')[0]) {
+        $('body').on('click', '#ms-menu-trigger', function() {
+          $('.ms-menu').toggleClass('toggled');
+        });
+      }
+    });
+  </script>
 </body>
 
 </html>

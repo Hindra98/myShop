@@ -85,6 +85,7 @@ if (isset($_GET['err'])) {
           <div class="group">
             <label class="label" for="sm">Situation matrimoniale</label>
             <select name="sm" id="sm" required>
+              <option value="0" disabled selected>Situation matrimoniale</option>
               <option value="Célibataire">Célibataire</option>
               <option value="Marié(e)">Marié(e)</option>
               <option value="Divorcé(e)">Divorcé(e)</option>
@@ -107,6 +108,60 @@ if (isset($_GET['err'])) {
       </form>
     </div>
   </div>
+
+
+  <main class="form-signin w-100 m-auto">
+    <form method="POST" class="text-center mx-auto pt-2" action="function.php">
+      <h1 class="h2 mt-3 mb-5 fw-bold">Connexion - MyShop</h1>
+      <div class="my-2">
+        <input type="email" name="email" class="form-control px-3 py-2" placeholder="name@example.com" required />
+        <input type="text" name="nom" class="form-control px-3 py-2" placeholder="Votre nom" required />
+      </div>
+      <div class="my-2">
+        <input type="password" name="pass" class="form-control px-3 py-2" placeholder="Mot de passe" required />
+        <input name="passr" type="password" class="form-control px-3 py-2" placeholder="Répéter mot de passe" required />
+      </div>
+      <div class="my-2">
+        <input name="tel" type="tel" class="form-control px-3 py-2" placeholder="Votre téléphone" required />
+        <input name="adresse" type="adresse" class="form-control px-3 py-2" placeholder="Votre adresse" required />
+      </div>
+      <div class="my-2">
+        <div class="genre lab">Genre : 
+          <label for="homme" class="form-label">Homme </label><input type="radio" id="homme" name="genre" value="Homme" />
+          <label for="femme" class="form-label">Femme </label><input type="radio" id="femme" name="genre" value="Femme" />
+        </div>
+        <select name="sm" id="sm" required>
+          <option value="">Situation matrimoniale</option>
+          <option value="Célibataire">Célibataire</option>
+          <option value="Marié(e)">Marié(e)</option>
+          <option value="Divorcé(e)">Divorcé(e)</option>
+        </select>
+      </div>
+      <div class="checkbox my-3">
+        <input id="check" type="checkbox" class="check" name="souvenir" checked>
+        <label for="check" class="form-label"> Se souvenir de moi</label>
+      </div>
+      <button class="w-100 btn btn-lg btn-primary" type="submit">Se connecter</button>
+      <p class="mt-3"><a href="#forgot" class="link-secondary">Mot de passe oublié</a></p>
+      <p class="my-3 text-muted">Vous avez déjà un compte? <a href="register.php">Connectez-vous</a></p>
+      <?php
+      if ($err != 0) {
+      ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <?= $message ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">X</button>
+        </div>
+      <?php }
+      if (isset($_GET['ok'])) {
+      ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <?= "Inscription reussi! Connectez vous maintenant" ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">X</button>
+        </div>
+      <?php } ?>
+      <input type="hidden" name="form" value="inscription" />
+    </form>
+  </main>
 
   <script src="js/jquery.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>

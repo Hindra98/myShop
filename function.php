@@ -74,27 +74,32 @@ if (isset($_POST['form']) && ($_POST['form'] == "message")) {
   $uid = $_POST['uid'];
   $id = $_SESSION['id'];
 
-  if ( empty($_POST['textMessage']) && $_FILES['sendFic']['error'] != 0 ) {
+  if (empty($_POST['textMessage']) && $_FILES['sendFic']['error'] != 0) {
     header("Location: index.php?err=1&uid=$uid");
     exit();
   }
 
   $message = htmlentities($_POST['textMessage']);
-  $fichier = basename($_FILES['sendFic']['name']);
-
-  if (move_uploaded_file($_FILES['sendFic']['tmp_name'], './uploads/'.$fichier)) {
-    echo "envoyeee";
-  } else {
-    echo "non envoyee";
+  $lab_fic = null;
+  $fichier = null;
+  if ($_FILES['sendFic']['error'] == 0) {
+    $infosfichier = pathinfo($_FILES['sendFic']['name']);
+    $ext = $infosfichier['extension'];
+    $nbr = (int) $ext;
+    $nbr += 1;
+    $lab_fic = basename($_FILES['sendFic']['name']);
+    $lab_fic = substr($lab_fic, 0, -$nbr);
+    $fichier = $id . $uid . uniqid() . '.' . $ext;
+    move_uploaded_file($_FILES['sendFic']['tmp_name'], './uploads/' . $fichier);
   }
-/*
-  $req = $db->prepare('INSERT INTO messages VALUES(NULL,:id,:userid,:contenu,NOW(),:fichier, 0)');
+
+  $req = $db->prepare('INSERT INTO messages VALUES(NULL,:id,:userid,:contenu,NOW(),:fichier, :lab_fic, 0)');
   $req->execute(array(
     'id' => $id,
     'userid' => $uid,
     'contenu' => $message,
-    'fichier' => $fichier
+    'fichier' => $fichier,
+    'lab_fic' => $lab_fic
   ));
   header("Location: index.php?uid=$uid");
-  */
 }

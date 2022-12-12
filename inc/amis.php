@@ -1,4 +1,4 @@
-<div class="ami list-group list-group-flush">
+<div class="list-group lg-alt">
   <?php
   include_once('config.php');
   $idAmi = $_SESSION['id'];
@@ -11,26 +11,16 @@
     if ($donnees['status']) {
       $connect = "Connecté";
     }
-    if ($donnees['photo']) {
-      $photo = "<img src=" . $donnees['photo'] . " width='100%' height='100%' alt='photo de profil' class=''  />";
-    } else {
-      $photo = '<img src="img/kaneki.jpeg" width="100%" height="100%" alt="" class=" " />';
-    }
+    $photo = ($donnees['photo']) ? $donnees['photo'] : 'profil/defaut.jpeg';
   ?>
 
-    <a href="index.php?uid=<?= $idAmi; ?>" class="list-group-item list-group-item-action">
-      <div class="card d-inline-block">
-        <div class="row g-0">
-          <div class="col-md-4">
-            <?= $photo; ?>
-          </div>
-          <div class="col-md-8">
-            <div class="card-body">
-              <h5 class="card-title"> <?= $nom_ami; ?></h5>
-              <p class="card-text"><small class="text-muted"><?= $connect; ?></small></p>
-            </div>
-          </div>
-        </div>
+    <a class="list-group-item media" href="index.php?uid=<?= $idAmi; ?>">
+      <div class="pull-left">
+        <img src="<?= $photo; ?>" alt="" class="img-avatar" />
+      </div>
+      <div class="media-body">
+        <span class="list-group-item-heading"> <?= $nom_ami; ?> </span><br/>
+        <span class="list-group-item-text c-gray"><?= $connect; ?></span>
       </div>
     </a>
   <?php
